@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { useTodos } from './useTodos';
+import { useTodo, useAddTodo, useRemoveTodo, TodosProvider } from './useTodos';
 import './App.css';
 
 const Heading = ({title}: { title: string }) => (
@@ -49,10 +49,9 @@ function UL<T>({
 }
 
 function App() {
-  const { todos, addTodo, removeTodo} = useTodos([
-    { id: 0, text: 'Hello There', done: false}
-  ])
-
+  const todos = useTodo()
+  const addTodo = useAddTodo()
+  const removeTodo = useRemoveTodo()
   const newTodoRef = useRef<HTMLInputElement>(null)
   const onAddTodo = useCallback(() => {
     if(newTodoRef.current){
@@ -68,7 +67,7 @@ function App() {
       <Heading title='Todos'/>
       <UL 
         items={todos}
-        itemClick={(item) => alert(item.id)}
+        itemClick={() => {}}
         render={(todo) => (
           <>
             {todo.text}
@@ -84,4 +83,31 @@ function App() {
   );
 }
 
-export default App;
+const ShowTodos = () => {
+  const todos = useTodo()
+  return (
+    <UL 
+        items={todos}
+        itemClick={() => {}}
+        render={(todo) => (
+          <>
+            {todo.text}
+          </>
+        )}
+      />
+  )
+}
+
+const AppWrapper = () => (
+  <TodosProvider initialTodos={[{ id: 0, text: 'Hello There useContextTodo', done: false}]}>
+    <div style={{ 
+      display: 'grid',
+      gridTemplateColumns: '50% 50%'
+    }}>
+      <App></App>
+      <ShowTodos></ShowTodos>
+    </div>
+  </TodosProvider>
+)
+
+export default AppWrapper;
